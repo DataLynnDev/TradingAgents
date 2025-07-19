@@ -48,7 +48,7 @@ Here, we dive specifically into the Trader role. In this agent, it takes in repo
   <img src="assets/example.png" style="width: 100%; height: auto;">
 </p>
 
-The agent itself is flexible as well, in here, we are able to incorporate whichever strategy we would like the agent to carry out, momentum is just one of the many strategies that we could incorporate into this framework.
+The trader retrieves real time data from online sources such as Yahoo Finance, then analyzing the stock market data using our algorithms, and gives out a comprehensive report on the insights and reasonings that the agent gives. The agent itself is flexible as well, in here, we are able to incorporate whichever strategy we would like the agent to carry out, momentum is just one of the many strategies that we could incorporate into this framework.
 
 
 Further goals:
