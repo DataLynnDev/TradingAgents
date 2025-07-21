@@ -1,15 +1,21 @@
 ## Datalynn TradingAgent
 
-The stock market requires constant supervision and key decision making, in Datalynn, we aim to help our clients by providing a curated trading agent utilizing our own algorithms to achieve the most out of your investment
+The stock market requires constant supervision and key decision making, in Datalynn, our AI-powered trading agent is designed to help you make faster, data-driven investment decisions by synthesizing market trends, news, social sentiment, and technical indicators in real-time.
 
 The base of our framework follows a skeleton code that acts as an trading agent. Utilizing LLM powered agents and real time online external resources, the platform collaboratively evaluates the market conditions and informs the agents within the framework with the necessary data to generate an investment report.
+
+### What you can expect
+- Faster trade decisions based on 24/7 market monitoring
+- Balanced risk assessments tailored to your investment profile
+- Reduced manual workload — actionable recommendations summarized for you
 
 Below is the general work flow on how the agent works at its base
 <p align="center">
   <img src="assets/schema.png" style="width: 100%; height: auto;">
 </p>
 
-The pipeline works as multiple teams, making an initial analysis of your choosing, then the research team evaluates the chosen company, the trading team then gives an initial decision which then gets sent to the management team for advisement, below is a quick explanation on what each team and its agents does within the pipeline.
+The pipeline works as multiple teams, below is a quick explanation on what each team and its agents does within the pipeline.
+
 ### Analyst Team
 - Fundamentals Analyst: Evaluates company financials and performance metrics, identifying intrinsic values and potential red flags.
 - Sentiment Analyst: Analyzes social media and public sentiment using sentiment scoring algorithms to gauge short-term market mood.
@@ -48,10 +54,12 @@ Here, we dive specifically into the Trader role. In this agent, it takes in repo
   <img src="assets/example.png" style="width: 100%; height: auto;">
 </p>
 
-The trader retrieves real time data from online sources such as Yahoo Finance, then analyzing the stock market data using our algorithms, and gives out a comprehensive report on the insights and reasonings that the agent gives. The agent itself is flexible as well, in here, we are able to incorporate whichever strategy we would like the agent to carry out, momentum is just one of the many strategies that we could incorporate into this framework.
+The trader retrieves real time data from online sources such as Yahoo Finance, then analyzing the stock market data using our algorithms, and gives out a comprehensive report on the insights and reasonings that the agent gives. The agent itself is flexible as well, in here, we are able to incorporate whichever strategy we would like the agent to carry out, momentum is just one of the many strategies that we could incorporate into this framework. We aim to integrate our own algorithms into this framework for analyzing the chosen stock, allowing the agent to generate more sophisticated results and actionable insights for the final decision.
 
 
 Further goals:
 - Standarize the pipeline, ensuring the reports are uniform in structure and actively training the agents to do so
 - Incorporate different strategies and modularize the trader agent
 - Further engineer the analysts and manager agents to give key data points and actionable insights
+- Allowing the user to choose their own trading strategy via interface
+- Ability to interact with the market (purchasing/selling stocks)
