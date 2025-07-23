@@ -185,6 +185,10 @@ class GraphSetup:
             },
         )
         workflow.add_edge("Research Manager", "Trader")
+        
+        #IMPORTANT
+        #This section here allows the use of tool calling for the trader agent, the trader tools is a node itself
+        #if a tool call exists, it will go to the tool node and carry out instructions, otherwise, go to the next agent
         workflow.add_conditional_edges(
             "Trader",
             self.conditional_logic.should_continue_trader,
@@ -193,7 +197,9 @@ class GraphSetup:
                 "Risky Analyst": "Risky Analyst",
             },
         )
+        #the node of trader tools cannot go to anyone but trader, since the trader decides if the analysis is done or not
         workflow.add_edge("tools_trader","Trader")
+        
         workflow.add_conditional_edges(
             "Risky Analyst",
             self.conditional_logic.should_continue_risk_analysis,
