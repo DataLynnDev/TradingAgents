@@ -17,7 +17,7 @@ from .risk_mgmt.neutral_debator import create_neutral_debator
 from .managers.research_manager import create_research_manager
 from .managers.risk_manager import create_risk_manager
 
-from .trader.trader import create_trader
+from .trader.trader import Trader
 
 __all__ = [
     "FinancialSituationMemory",
@@ -37,5 +37,5 @@ __all__ = [
     "create_risk_manager",
     "create_safe_debator",
     "create_social_media_analyst",
-    "create_trader",
+    "Trader",
 ]

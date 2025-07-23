@@ -8,6 +8,8 @@ from langgraph.prebuilt import ToolNode
 from tradingagents.agents import *
 from tradingagents.agents.utils.agent_states import AgentState
 from tradingagents.agents.utils.agent_utils import Toolkit
+from tradingagents.agents.trader.trader import Trader
+from tradingagents.agents.trader.strategies import test
 
 from .conditional_logic import ConditionalLogic
 
@@ -89,10 +91,9 @@ class GraphSetup:
             tool_nodes["fundamentals"] = self.tool_nodes["fundamentals"]
         tool_nodes["trader"] = ToolNode([
             self.toolkit.get_YFin_data_online,
-            self.toolkit.get_stockstats_indicators_report_online,
             self.toolkit.get_YFin_data,
-            self.toolkit.get_stockstats_indicators_report
-            # Add any other tools the trader needs
+            test.run_backtest
+            
         ])
         # Create researcher and manager nodes
         bull_researcher_node = create_bull_researcher(
@@ -104,7 +105,9 @@ class GraphSetup:
         research_manager_node = create_research_manager(
             self.deep_thinking_llm, self.invest_judge_memory
         )
-        trader_node = create_trader(self.quick_thinking_llm, self.trader_memory,self.toolkit)
+        trader = Trader(self.quick_thinking_llm,self.trader_memory,self.toolkit)
+        trader_node = trader.create_trader()
+        # trader_node = create_trader(self.quick_thinking_llm, self.trader_memory,self.toolkit)
         
         # Create risk analysis nodes
         risky_analyst = create_risky_debator(self.quick_thinking_llm)

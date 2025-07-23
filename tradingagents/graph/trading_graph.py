@@ -71,7 +71,7 @@ class TradingAgentsGraph:
             raise ValueError(f"Unsupported LLM provider: {self.config['llm_provider']}")
         
         self.toolkit = Toolkit(config=self.config)
-
+        
         # Initialize memories
         self.bull_memory = FinancialSituationMemory("bull_memory", self.config)
         self.bear_memory = FinancialSituationMemory("bear_memory", self.config)
