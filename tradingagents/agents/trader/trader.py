@@ -3,7 +3,12 @@ import functools
 import time
 import json
 from .strategies import test
+'''- dynamic prompt 
+metrics for the position
+what does it mean?
+according to the metrics, the next steps? (for the agents)
 
+'''
 class Trader:
     def __init__(self,llm,memory,toolkit):
         self.strategy = None
@@ -42,24 +47,23 @@ class Trader:
                     test.run_backtest
                 ]
             system_message = (
-                """You are a trading agent. Follow these steps exactly, DO NOT SKIP:
-                    1. First, ALWAYS call the tool named 'get_YFin_data' to retrieve raw stock data.
-                    2. After receiving the data, IMMEDIATELY and ALWAYS call the 'run_backtest' tool with the stock data as input.
-                    3. Only after both tool calls are complete, analyze the backtest logs and provide a recommendation.
-                    4. Do NOT skip or reorder these steps."""
+                """You are a trading agent. Follow these steps exactly ONCE, DO NOT SKIP:
+                    1. First, ALWAYS call the tool named 'get_YFin_data' to retrieve raw stock data. If the retrieved data is empty, retrieve it until actual data comes through.
+                    2. After receiving the data, IMMEDIATELY and ALWAYS call the 'run_backtest' tool with the stock data as input, display the logs in the report.
+                    3. Only after both tool calls are complete, analyze the backtest logs and provide a recommendation. DO NOT CALL ANY MORE TOOLS AFTER
+                   """
             )
             prompt = ChatPromptTemplate.from_messages([
                 ("system", "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}."
                 "This plan incorporates insights from current technical market trends, macroeconomic indicators, and social media sentiment." 
                 "Use this plan as a foundation for evaluating your next trading decision.\n\nProposed Investment Plan: {investment_plan}\n\n"
-                "Leverage these insights to make an informed and strategic decision."
-                "Furthermore, you must use the given tools, do not skip this: {tool_names},{system_message}."
-                "Create a report for {ticker} starting from {current_date}, going back a month. Include the date range in the report"
-                "Using the given tools, first retrieve the stock data, then use that data as input to the backtesting algorithm and analyze the logs given as a JSON file, then give your analysis on the logs"),
+                "Furthermore, you must use the given tools, DO NOT SKIP THIS: {tool_names},{system_message}."
+                "Create a report for {ticker} starting from {current_date}, going back a MONTH. Include the date range in the report"
+                "Using the given tools, include your analysis and logs on the report"),
                 ("user", "You are a trading agent analyzing market data to make investment decisions."
                 "Based on your analysis, provide a specific recommendation to buy, sell, or hold. "
                 "End with a firm decision and always conclude your response with 'FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL**' to confirm your recommendation."
-                "Do not forget to utilize lessons from past decisions to learn from your mistakes. Here is some reflections from similar situations you traded in and the lessons learned: {past_memory_str}"),
+                "Do not forget to utilize lessons from past decisions to learn from your mistakes. Here is the past memory: {past_memory_str}"),
                 MessagesPlaceholder(variable_name="messages"),
             ])
             
@@ -71,7 +75,7 @@ class Trader:
             prompt = prompt.partial(investment_plan=investment_plan)
             prompt = prompt.partial(past_memory_str= past_memory_str)
             chain = prompt | self.llm.bind_tools(tools)
-            
+
             result = chain.invoke(state["messages"])
             report = ""
 
