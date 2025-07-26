@@ -4,13 +4,13 @@ from typing import Dict, Any
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, StateGraph, START
 from langgraph.prebuilt import ToolNode
+import inspect
 
 from tradingagents.agents import *
 from tradingagents.agents.utils.agent_states import AgentState
 from tradingagents.agents.utils.agent_utils import Toolkit
 from tradingagents.agents.trader.trader import Trader
-from tradingagents.agents.trader.strategies import test
-
+from tradingagents.graph.get_trader_tools import get_tools
 from .conditional_logic import ConditionalLogic
 
 
@@ -29,6 +29,7 @@ class GraphSetup:
         invest_judge_memory,
         risk_manager_memory,
         conditional_logic: ConditionalLogic,
+        trading_strategy
     ):
         """Initialize with required components."""
         self.quick_thinking_llm = quick_thinking_llm
@@ -41,6 +42,7 @@ class GraphSetup:
         self.invest_judge_memory = invest_judge_memory
         self.risk_manager_memory = risk_manager_memory
         self.conditional_logic = conditional_logic
+        self.trading_strategy = trading_strategy
 
     def setup_graph(
         self, selected_analysts=["market", "social", "news", "fundamentals"]
@@ -89,12 +91,13 @@ class GraphSetup:
             )
             delete_nodes["fundamentals"] = create_msg_delete()
             tool_nodes["fundamentals"] = self.tool_nodes["fundamentals"]
+        tools = get_tools(self.trading_strategy)
         tool_nodes["trader"] = ToolNode([
             self.toolkit.get_YFin_data_online,
             self.toolkit.get_YFin_data,
-            test.run_backtest
-            
+            *tools
         ])
+        
         # Create researcher and manager nodes
         bull_researcher_node = create_bull_researcher(
             self.quick_thinking_llm, self.bull_memory
@@ -105,7 +108,7 @@ class GraphSetup:
         research_manager_node = create_research_manager(
             self.deep_thinking_llm, self.invest_judge_memory
         )
-        trader = Trader(self.quick_thinking_llm,self.trader_memory,self.toolkit)
+        trader = Trader(self.quick_thinking_llm,self.trader_memory,self.toolkit,self.trading_strategy)
         trader_node = trader.create_trader()
         # trader_node = create_trader(self.quick_thinking_llm, self.trader_memory,self.toolkit)
         

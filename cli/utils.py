@@ -121,6 +121,38 @@ def select_research_depth() -> int:
 
     return choice
 
+def select_trading_strategy() -> str:
+    """Select research depth using an interactive selection."""
+
+    # Define research depth options with their corresponding values
+    STRATEGIES = [
+        ("Momentum", "momentum"),
+        ("Bbands", "bbands"),
+        ("AI Select (DOES NOTHING)", "NONE"),
+    ]
+    
+    choice = questionary.select(
+        "Select Your [Research Depth]:",
+        choices=[
+            questionary.Choice(display, value=value) for display, value in STRATEGIES
+        ],
+        instruction="\n- Use arrow keys to navigate\n- Press Enter to select",
+        style=questionary.Style(
+            [
+                ("selected", "fg:yellow noinherit"),
+                ("highlighted", "fg:yellow noinherit"),
+                ("pointer", "fg:yellow noinherit"),
+            ]
+        ),
+    ).ask()
+
+    if choice is None:
+        console.print("\n[red]No trading strategy selected. Exiting...[/red]")
+        exit(1)
+
+    return choice
+    
+
 
 def select_shallow_thinking_agent(provider) -> str:
     """Select shallow thinking llm engine using an interactive selection."""

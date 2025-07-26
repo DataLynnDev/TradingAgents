@@ -462,11 +462,20 @@ def get_user_selections():
         )
     )
     selected_research_depth = select_research_depth()
+    
+    
+    #trading strategies to be implemented here
+    console.print(
+        create_question_box(
+            "Step 5: Trading Strategy", "Select your training strategy"
+        )
+    )
+    selected_trading_strategy = select_trading_strategy()
 
     # Step 5: OpenAI backend
     console.print(
         create_question_box(
-            "Step 5: OpenAI backend", "Select which service to talk to"
+            "Step 6: OpenAI backend", "Select which service to talk to"
         )
     )
     selected_llm_provider, backend_url = select_llm_provider()
@@ -489,6 +498,7 @@ def get_user_selections():
         "backend_url": backend_url,
         "shallow_thinker": selected_shallow_thinker,
         "deep_thinker": selected_deep_thinker,
+        "trading_strategy": selected_trading_strategy
     }
 
 
@@ -743,7 +753,7 @@ def run_analysis():
     config["deep_think_llm"] = selections["deep_thinker"]
     config["backend_url"] = selections["backend_url"]
     config["llm_provider"] = selections["llm_provider"].lower()
-
+    config["trading_strategy"] = selections["trading_strategy"]
     # Initialize the graph
     graph = TradingAgentsGraph(
         [analyst.value for analyst in selections["analysts"]], config=config, debug=True

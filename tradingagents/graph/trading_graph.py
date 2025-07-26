@@ -82,6 +82,8 @@ class TradingAgentsGraph:
         # Create tool nodes
         self.tool_nodes = self._create_tool_nodes()
 
+        # Trading Strategy
+        self.trading_strategy = self.config["trading_strategy"]
         # Initialize components
         self.conditional_logic = ConditionalLogic()
         self.graph_setup = GraphSetup(
@@ -95,6 +97,7 @@ class TradingAgentsGraph:
             self.invest_judge_memory,
             self.risk_manager_memory,
             self.conditional_logic,
+            self.trading_strategy
         )
 
         self.propagator = Propagator()
