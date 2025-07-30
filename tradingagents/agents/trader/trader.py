@@ -28,7 +28,7 @@ class Trader:
             
             current_date = state["trade_date"]
             ticker = state["company_of_interest"]
-            strategy = getattr(strategies, self.strategy) 
+            strategy_module = getattr(strategies, self.strategy) 
             
             past_memory_str = ""
             if past_memories:
@@ -36,24 +36,20 @@ class Trader:
                     past_memory_str += rec["recommendation"] + "\n\n"
             else:
                 past_memory_str = "No past memories found."
-            # if self.toolkit.config["online_tools"]:
-            #     tools = [
-            #         self.toolkit.get_YFin_data_online,
-            #         test.run_backtest
-            #     ]
-            # else:
-            #     tools = [
-            #         self.toolkit.get_YFin_data,
-            #         test.run_backtest
-            #     ]
+            
+            # 获取策略模块中的 run_backtest 函数
+            run_backtest_func = getattr(strategy_module, 'run_backtest', None)
+            if not run_backtest_func:
+                raise ValueError(f"Strategy {self.strategy} does not have a run_backtest function")
+            
             tools = [
                 self.toolkit.get_YFin_data_online,
-                strategy.run_backtest
+                run_backtest_func
             ]
             system_message = (
                 f"""You are a trading agent. Follow these steps exactly ONCE, DO NOT SKIP:
                     1. First, ALWAYS call the tool to retrieve raw stock data. If the retrieved data is empty, retrieve it until actual data comes through.
-                    2. After receiving the data, IMMEDIATELY and ALWAYS call the 'run_backtest' tool for the strategy: {strategy},  with the stock data as input, display the strategy name and logs in the report.
+                    2. After receiving the data, IMMEDIATELY and ALWAYS call the 'run_backtest' tool for the strategy: {self.strategy},  with the stock data as input, display the strategy name and logs in the report.
                     3. Only after both tool calls are complete, analyze the backtest log as below
                     4. Analyzing the data, give the prediction probability confidence (0-100%), maximum allowable loss for a single transaction, strategy historical win rate backtest value and abnormal fluctuation warning
                     5. Provide a recommendation after. DO NOT CALL ANY MORE TOOLS AFTER
@@ -65,7 +61,7 @@ class Trader:
                 "This plan incorporates insights from current technical market trends, macroeconomic indicators, and social media sentiment." 
                 "Use this plan as a foundation for evaluating your next trading decision.\n\nProposed Investment Plan: {investment_plan}\n\n"
                 "Furthermore, you must use the given tools, DO NOT SKIP THIS: {tool_names},{system_message}."
-                "Create a report for {ticker} starting from {current_date}, GOING BACK ONE MONTH, DO NOT GO INTO THE FUTURE DATES. Include the date range in the report"
+                "Create a report for {ticker} starting from {current_date}, GOING BACK SIX MONTHS for sufficient historical data for technical analysis, DO NOT GO INTO THE FUTURE DATES. Include the date range in the report"
                 "Using the given tools, include your analysis and logs on the report"),
                 ("user", "You are a trading agent analyzing market data to make investment decisions."
                 "Based on your analysis, provide a specific recommendation to buy, sell, or hold. "

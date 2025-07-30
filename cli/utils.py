@@ -122,17 +122,18 @@ def select_research_depth() -> int:
     return choice
 
 def select_trading_strategy() -> str:
-    """Select research depth using an interactive selection."""
+    """Select trading strategy using an interactive selection."""
 
-    # Define research depth options with their corresponding values
+    # Define trading strategy options with their corresponding values
     STRATEGIES = [
         ("Momentum", "momentum"),
         ("Bbands", "bbands"),
+        ("Risk Averse", "risk_averse"),
         ("AI Select (DOES NOTHING)", "NONE"),
     ]
     
     choice = questionary.select(
-        "Select Your [Research Depth]:",
+        "Select Your [Trading Strategy]:",
         choices=[
             questionary.Choice(display, value=value) for display, value in STRATEGIES
         ],
