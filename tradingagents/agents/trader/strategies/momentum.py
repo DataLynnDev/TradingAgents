@@ -9,11 +9,11 @@ class MomentumBacktest(bt.Strategy):
     params = (
         ("momentum_period", 10),  
     )
-
+    
     def __init__(self):
         self.momentum = self.datas[0].close - self.datas[0].close(-self.p.momentum_period)
         self.data_log = []
-
+    
     def next(self):
         self.data_log.append({
             "date": self.datas[0].datetime.date(0).isoformat(),

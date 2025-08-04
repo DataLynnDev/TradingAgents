@@ -1,6 +1,17 @@
 import time
 import json
 
+#MAIN CHANGES
+##################################
+'''
+Line 47-50
+Deliverables: 
+- Confidence score (0-100%) indicating certainty in the final recommendation.
+- Detailed reasoning anchored in the debate and past reflections. 
+- Classify the primary risk addressed in this decision (e.g., Market Risk, Execution Risk, News/Headline Risk, Liquidity Risk).
+---
+'''
+##################################
 
 def create_risk_manager(llm, memory):
     def risk_manager_node(state) -> dict:
@@ -32,8 +43,9 @@ Guidelines for Decision-Making:
 
 Deliverables:
 - A clear and actionable recommendation: Buy, Sell, or Hold. Do not give a blank response, ensure this instruction is not ignored.
-- Detailed reasoning anchored in the debate and past reflections.
-
+- Confidence score (0-100%) indicating certainty in the final recommendation.
+- Detailed reasoning anchored in the debate and past reflections. 
+- Classify the primary risk addressed in this decision (e.g., Market Risk, Execution Risk, News/Headline Risk, Liquidity Risk).
 ---
 
 **Analysts Debate History:**  

@@ -3,9 +3,9 @@ import functools
 import time
 import json
 from . import strategies
-'''- dynamic prompt 
-metrics for the position
-according to the metrics, the next steps? (for the agents)
+'''
+decision log - each report needs a log of all decisions made, right now focusing on trader, will need
+
 '''
 class Trader:
     def __init__(self,llm,memory,toolkit,strategy): 
@@ -55,7 +55,6 @@ class Trader:
                     5. Provide a recommendation after. DO NOT CALL ANY MORE TOOLS AFTER
                    """
             )
-            
             prompt = ChatPromptTemplate.from_messages([
                 ("system", "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}."
                 "This plan incorporates insights from current technical market trends, macroeconomic indicators, and social media sentiment." 
