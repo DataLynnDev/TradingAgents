@@ -46,6 +46,9 @@ class Trader:
                 self.toolkit.get_YFin_data_online,
                 run_backtest_func
             ]
+            
+            report_structure = "TEST"
+            
             system_message = (
                 f"""You are a trading agent. Follow these steps exactly ONCE, DO NOT SKIP:
                     1. First, ALWAYS call the tool to retrieve raw stock data. If the retrieved data is empty, retrieve it until actual data comes through.
@@ -69,7 +72,6 @@ class Trader:
                 "Do not forget to utilize lessons from past decisions to learn from your mistakes. Here is the past memory: {past_memory_str}"),
                 MessagesPlaceholder(variable_name="messages"),
             ])
-            
             prompt = prompt.partial(tool_names=", ".join([tool.name for tool in tools]))
             prompt = prompt.partial(system_message=system_message)
             prompt = prompt.partial(current_date=current_date)
