@@ -3,7 +3,7 @@ import numpy as np
 # import statsmodels.api as sm
 
 
-class RSRS(bt.Indicator):
+class RSRS(bt.Indicator): #unused?
     """
     RSRS (Resistance Support Relative Strength)
 

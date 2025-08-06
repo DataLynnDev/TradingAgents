@@ -4,12 +4,11 @@ import time
 import json
 from . import strategies
 '''
-decision log - each report needs a log of all decisions made, right now focusing on trader, will need
+decision log - each report needs a log of all decisions made, right now focusing on trader
 
 '''
 class Trader:
     def __init__(self,llm,memory,toolkit,strategy): 
-        self.strategy = None
         self.llm = llm
         self.memory = memory
         self.toolkit = toolkit
@@ -47,8 +46,46 @@ class Trader:
                 run_backtest_func
             ]
             
-            report_structure = "TEST"
+            report_structure = """THE REPORT IS TO FOLLOW THIS EXACT HEADING STRUCTURE WITH THEIR CORRESPONDING INFORMATION FROM THE ANALYSIS
             
+                                DATE RANGE
+                                -Simply state the date range, in MM-DD-YYYY format
+                                
+                                HISTORICAL PERFORMANCE AND TECHNICAL ANALYSIS
+                                -Opening and closing stock prices
+                                -Highest and lowest stock price in the period
+                                -General trend (e.g., bullish, bearish, sideways)
+                                -Technical events (e.g., support/resistance breaks, moving average crossovers)
+                                
+                                DECISION LOG (FROM BACKTEST)
+                                -List out the history of the decisions made during the backtest
+                                -Dates and descriptions of key signals (buy/sell/hold/momentum shifts)
+                                -Indicator readings (e.g., RSI, MACD, momentum score) on those dates
+                                -Strategic actions taken by the model or strategy logic
+                                -Commentary on why the model acted (or didn't) at specific points
+                                
+                                BACKTEST PERFORMANCE
+                                -A summary of how the backtest has performed, and explaining the logs
+                                -Final portfolio value at end of backtest
+                                -Cash balance at close
+                                -Position size at end (e.g., 0 means all positions were sold)
+                                -Gain/loss over the backtest period
+                                -Number of trades executed and general success/failure pattern
+                                
+                                RISK ASSESSMENT        
+                                -Prediction confidence (%) or probability range
+                                -Maximum allowable loss per trade (percentage of capital)
+                                -Historical win rate from backtest (%)
+                                -Any warnings: high volatility, low liquidity, earnings upcoming, etc.
+                                -Macro/sector risks (inflation, interest rates, geopolitical, etc.)
+                                
+                                RECOMMENDATION & FINAL DECISION
+                                -Final recommendation (Hold/Buy/Sell/)
+                                -Justification (tie to signals, trend, risk, etc.)
+                                -Suggested holding period or reevaluation timeline
+                                -Lessons from past decisions
+                                """
+                                
             system_message = (
                 f"""You are a trading agent. Follow these steps exactly ONCE, DO NOT SKIP:
                     1. First, ALWAYS call the tool to retrieve raw stock data. If the retrieved data is empty, retrieve it until actual data comes through.
@@ -64,7 +101,8 @@ class Trader:
                 "Use this plan as a foundation for evaluating your next trading decision.\n\nProposed Investment Plan: {investment_plan}\n\n"
                 "Furthermore, you must use the given tools, DO NOT SKIP THIS: {tool_names},{system_message}."
                 "Create a report for {ticker} starting from {current_date}, GOING BACK SIX MONTHS for sufficient historical data for technical analysis, DO NOT GO INTO THE FUTURE DATES. Include the date range in the report"
-                "Using the given tools, include your analysis and logs on the report"),
+                "Using the given tools, include your analysis and logs on the report"
+                "Make sure to follow this exact structure: {report_structure}"),
                 ("user", "You are a trading agent analyzing market data to make investment decisions."
                 "Based on your analysis, provide a specific recommendation to buy, sell, or hold. "
                 "End with a firm decision and always conclude your response with 'FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL**' to confirm your recommendation."
@@ -79,6 +117,7 @@ class Trader:
             prompt = prompt.partial(company_name = company_name)
             prompt = prompt.partial(investment_plan=investment_plan)
             prompt = prompt.partial(past_memory_str= past_memory_str)
+            prompt = prompt.partial(report_structure = report_structure)
             chain = prompt | self.llm.bind_tools(tools)
 
             result = chain.invoke(state["messages"])
