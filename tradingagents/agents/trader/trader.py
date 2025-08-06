@@ -4,7 +4,25 @@ import time
 import json
 from . import strategies
 '''
-decision log - each report needs a log of all decisions made, right now focusing on trader
+decision log - each report needs a log of all decisions made, right now focusing on trader (FOCUS)
+-how to store data? how do we store the decision logs
+backtest (FOCUS)
+-how to store the results? 
+-how do i determine the results are good? what metrics are key? where in the strategies are affecting the results? want always up
+
+need to make be more specific on the metrics on the backtest, how is data stored? how will it be used? 
+-store yfin data? 
+-store metric data how?
+
+
+历史记录 decision log 该如何存入数据库
+我们最终的metric指标该如何确定，和评估
+
+
+create a document that not just talks about the general pipeline, but also how will the data be used, stored, the metrics involved, etc.
+
+
+chill on strategies for now, other side are doing it
 
 '''
 class Trader:
@@ -95,6 +113,7 @@ class Trader:
                     5. Provide a recommendation after. DO NOT CALL ANY MORE TOOLS AFTER
                    """
             )
+            
             prompt = ChatPromptTemplate.from_messages([
                 ("system", "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}."
                 "This plan incorporates insights from current technical market trends, macroeconomic indicators, and social media sentiment." 
