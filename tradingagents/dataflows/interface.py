@@ -625,6 +625,30 @@ def get_YFin_data_window(
     )
 
 
+
+def compute_adj_close(df):
+    """
+    Given a DataFrame with 'Close', 'Dividends', and 'Stock Splits',
+    returns a new Series 'Adj Close' like Yahoo Finance would calculate.
+    """
+
+    # Start with adjustment factors = 1 for every row
+    adj_factor = pd.Series(1.0, index=df.index)
+
+    # Handle stock splits
+    # Yahoo gives 2-for-1 split as 2.0 in "Stock Splits" column
+    split_factor = df["Stock Splits"].replace(0, 1)  # Replace 0 with 1 (no split days)
+    adj_factor /= split_factor.cumprod()[::-1].cumprod()[::-1]  # Apply backwards adjustment
+
+    # Handle dividends
+    # Dividend factor for day t: (Prev Close) / (Prev Close - Dividend)
+    dividend_factor = (df["Close"].shift(1) / (df["Close"].shift(1) - df["Dividends"])).fillna(1)
+    adj_factor *= dividend_factor.cumprod()[::-1].cumprod()[::-1]
+
+    # Final adjusted close
+    adj_close = df["Close"] * adj_factor
+    return adj_close
+
 def get_YFin_data_online(
     symbol: Annotated[str, "ticker symbol of the company"],
     start_date: Annotated[str, "Start date in yyyy-mm-dd format"],
@@ -655,7 +679,11 @@ def get_YFin_data_online(
     for col in numeric_columns:
         if col in data.columns:
             data[col] = data[col].round(2)
-
+    
+    if "Adj Close" not in data.columns:
+        data["Adj Close"] = compute_adj_close(data)
+    data["Return"] = data["Adj Close"].pct_change()
+    data['Return'].iloc[0] = 0
     # Convert DataFrame to CSV string
     csv_string = data.to_csv()
 

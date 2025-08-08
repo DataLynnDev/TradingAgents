@@ -3,6 +3,7 @@ from langchain_core.tools import tool
 from datetime import datetime
 import pandas as pd
 import json
+import numpy as np
 import io
 
 class MomentumBacktest(bt.Strategy):
@@ -30,7 +31,6 @@ class MomentumBacktest(bt.Strategy):
             self.buy()
         elif self.position and self.momentum[0] < 0:
             self.sell()
-            
         
 
   
@@ -43,11 +43,29 @@ def run_backtest(csv_data) -> str:
     """
     df = pd.read_csv(io.StringIO(csv_data), comment='#', parse_dates=['Date'])
     df.set_index('Date', inplace=True)
-    data = bt.feeds.PandasData(dataname=df)
-    cerebro = bt.Cerebro()
-    cerebro.adddata(data)
-    cerebro.addstrategy(MomentumBacktest)
-    final =  cerebro.run()   
-    logs = final[0].data_log[-5:]
-    jsonLog = json.dumps(logs, indent=2)
-    return f"final logs: {jsonLog}"
+    
+    results = []
+    returns = df['Return'].dropna().values
+    n_simulations = 5
+    for i in range(n_simulations):
+        resampled_returns = np.random.choice(returns, size=len(returns), replace=True)
+        df_sim = df.copy()
+        
+        price_simulated = [df_sim['Adj Close'].iloc[0]]  # starting price
+        for r in resampled_returns:
+            price_simulated.append(price_simulated[-1] * (1 + r))
+        
+        df_sim['Close'] = price_simulated[1:]
+        df_sim['Adj Close'] = price_simulated[1:]
+        
+        data = bt.feeds.PandasData(dataname=df_sim)
+        cerebro = bt.Cerebro()
+        cerebro.adddata(data)
+        cerebro.addstrategy(MomentumBacktest)
+        final =  cerebro.run()   
+        logs = final[0].data_log[-5:]
+        jsonLog = json.dumps(logs, indent=2)
+        results.append(jsonLog)
+    return results
+
+

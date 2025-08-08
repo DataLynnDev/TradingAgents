@@ -1,7 +1,5 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import functools
-import time
-import json
 from . import strategies
 '''
 decision log - each report needs a log of all decisions made, right now focusing on trader (FOCUS)
@@ -108,7 +106,7 @@ class Trader:
                 f"""You are a trading agent. Follow these steps exactly ONCE, DO NOT SKIP:
                     1. First, ALWAYS call the tool to retrieve raw stock data. If the retrieved data is empty, retrieve it until actual data comes through.
                     2. After receiving the data, IMMEDIATELY and ALWAYS call the 'run_backtest' tool for the strategy: {self.strategy},  with the stock data as input, display the strategy name and logs in the report.
-                    3. Only after both tool calls are complete, analyze the backtest log as below
+                    3. The backtest tool runs a monte carlo simulation and will give a list of logs, only after both tool calls are complete, analyze the backtest log as below
                     4. Analyzing the data, give the prediction probability confidence (0-100%), maximum allowable loss for a single transaction, strategy historical win rate backtest value and abnormal fluctuation warning
                     5. Provide a recommendation after. DO NOT CALL ANY MORE TOOLS AFTER
                    """
