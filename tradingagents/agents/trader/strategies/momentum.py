@@ -12,7 +12,7 @@ class MomentumBacktest(bt.Strategy):
     )
     
     def __init__(self):
-        self.momentum = self.datas[0].close - self.datas[0].close(-self.p.momentum_period)
+        self.momentum = self.datas[0].close - self.datas[0].close[self.p.momentum_period]
         self.data_log = []
     
     def next(self):
@@ -21,9 +21,9 @@ class MomentumBacktest(bt.Strategy):
             "close": self.datas[0].close[0],
             "cash": self.broker.getcash(),
             "value": self.broker.getvalue(),
-            "position_size": self.position.size,
+            "position_size": self.position.size, 
             "momentum": self.momentum[0] if len(self) > self.p.momentum_period else None,
-        })
+        })  
         if len(self) <= self.p.momentum_period:
             return
 
@@ -33,7 +33,7 @@ class MomentumBacktest(bt.Strategy):
             self.sell()
         
 
-  
+
 
 @tool
 def run_backtest(csv_data) -> str:
@@ -63,7 +63,7 @@ def run_backtest(csv_data) -> str:
         cerebro.adddata(data)
         cerebro.addstrategy(MomentumBacktest)
         final =  cerebro.run()   
-        logs = final[0].data_log[-5:]
+        logs = final[0].data_log
         jsonLog = json.dumps(logs, indent=2)
         results.append(jsonLog)
     return results
