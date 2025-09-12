@@ -4,13 +4,13 @@ from typing import Dict, Any
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, StateGraph, START
 from langgraph.prebuilt import ToolNode
+from langchain.tools import tool
 import inspect
 
 from tradingagents.agents import *
 from tradingagents.agents.utils.agent_states import AgentState
 from tradingagents.agents.utils.agent_utils import Toolkit
-from tradingagents.agents.trader.trader import Trader
-from tradingagents.graph.get_trader_tools import get_tools
+
 from .conditional_logic import ConditionalLogic
 
 
@@ -91,12 +91,6 @@ class GraphSetup:
             )
             delete_nodes["fundamentals"] = create_msg_delete()
             tool_nodes["fundamentals"] = self.tool_nodes["fundamentals"]
-        tools = get_tools(self.trading_strategy)
-        tool_nodes["trader"] = ToolNode([
-            self.toolkit.get_YFin_data_online,
-            self.toolkit.get_YFin_data,
-            *tools
-        ])
         
         # Create researcher and manager nodes
         bull_researcher_node = create_bull_researcher(
@@ -110,16 +104,28 @@ class GraphSetup:
         )
         trader = Trader(self.quick_thinking_llm,self.trader_memory,self.toolkit,self.trading_strategy)
         trader_node = trader.create_trader()
+        
+        trader_tools = ToolNode([
+            self.toolkit.get_YFin_data_online,
+            self.toolkit.get_YFin_data,
+            trader.run_backtest
+        ])
         # trader_node = create_trader(self.quick_thinking_llm, self.trader_memory,self.toolkit)
         
         # Create risk analysis nodes
         risky_analyst = create_risky_debator(self.quick_thinking_llm)
         neutral_analyst = create_neutral_debator(self.quick_thinking_llm)
         safe_analyst = create_safe_debator(self.quick_thinking_llm)
-        risk_manager_node = create_risk_manager(
-            self.deep_thinking_llm, self.risk_manager_memory
-        )
-
+        risk_manager_node = create_risk_manager(self.deep_thinking_llm, self.risk_manager_memory)
+        quality_manager_node = create_quality_manager(self.deep_thinking_llm)
+        rewrite_node = create_rewrite_node(self.deep_thinking_llm)
+        
+        save_node = create_save_node()
+        
+        
+        #Quality manager - checks if the generated report is up to standard
+        #quality_manager_node = create_quality_manager(self.deep_thinking_llm)
+        
         # Create workflow
         workflow = StateGraph(AgentState)
 
@@ -136,14 +142,17 @@ class GraphSetup:
         workflow.add_node("Bear Researcher", bear_researcher_node)
         workflow.add_node("Research Manager", research_manager_node)
         workflow.add_node("Trader", trader_node)
-        workflow.add_node("tools_trader", tool_nodes["trader"])
+        workflow.add_node("Trader Tools", trader_tools)
 
         
         workflow.add_node("Risky Analyst", risky_analyst)
         workflow.add_node("Neutral Analyst", neutral_analyst)
         workflow.add_node("Safe Analyst", safe_analyst)
         workflow.add_node("Risk Judge", risk_manager_node)
-
+        workflow.add_node("Quality Judge", quality_manager_node)
+        workflow.add_node("Rewrite",rewrite_node)
+        workflow.add_node("Save",save_node)
+        
         # Define edges
         # Start with the first analyst
         first_analyst = selected_analysts[0]
@@ -196,12 +205,12 @@ class GraphSetup:
             "Trader",
             self.conditional_logic.should_continue_trader,
             {
-                "tools_trader": "tools_trader",
+                "Trader Tools": "Trader Tools",
                 "Risky Analyst": "Risky Analyst",
             },
         )
         #the node of trader tools cannot go to anyone but trader, since the trader decides if the analysis is done or not
-        workflow.add_edge("tools_trader","Trader")
+        workflow.add_edge("Trader Tools","Trader")
         
         workflow.add_conditional_edges(
             "Risky Analyst",
@@ -227,8 +236,17 @@ class GraphSetup:
                 "Risk Judge": "Risk Judge",
             },
         )
-
-        workflow.add_edge("Risk Judge", END)
+        workflow.add_edge("Risk Judge","Quality Judge")
+        workflow.add_conditional_edges(
+            "Quality Judge",
+            self.conditional_logic.should_continue_report,
+            {
+                "Rewrite": "Rewrite",
+                "Save": "Save",
+            },
+        )
+        workflow.add_edge("Rewrite","Trader")
+        workflow.add_edge("Save", END)
 
         # Compile and return
         return workflow.compile()

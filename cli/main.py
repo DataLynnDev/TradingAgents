@@ -59,6 +59,8 @@ class MessageBuffer:
             "Safe Analyst": "pending",
             # Portfolio Management Team
             "Portfolio Manager": "pending",
+            "Quality Manager": "pending",
+            "Save Manager": "pending"
         }
         self.current_agent = None
         self.report_sections = {
@@ -70,7 +72,7 @@ class MessageBuffer:
             "trader_investment_plan": None,
             "final_trade_decision": None,
         }
-
+        
     def add_message(self, message_type, content):
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         self.messages.append((timestamp, message_type, content))
@@ -718,7 +720,7 @@ def display_complete_report(final_state):
 
 def update_research_team_status(status):
     """Update status for all research team members and trader."""
-    research_team = ["Bull Researcher", "Bear Researcher", "Research Manager", "Trader"]
+    research_team = ["Bull Researcher", "Bear Researcher", "Research Manager"]
     for agent in research_team:
         message_buffer.update_agent_status(agent, status)
 
@@ -798,7 +800,7 @@ def run_analysis():
                 content = obj.report_sections[section_name]
                 if content:
                     file_name = f"{section_name}.md"
-                    with open(report_dir / file_name, "w") as f:
+                    with open(report_dir / file_name, "w", encoding="utf-8") as f:
                         f.write(content)
         return wrapper
 
@@ -981,9 +983,7 @@ def run_analysis():
                         # Mark all research team members as completed
                         update_research_team_status("completed")
                         # Set first risk analyst to in_progress
-                        message_buffer.update_agent_status(
-                            "Risky Analyst", "in_progress"
-                        )
+                        message_buffer.update_agent_status("Trader", "in_progress")
 
                 # Trading Team
                 if (
@@ -993,6 +993,7 @@ def run_analysis():
                     message_buffer.update_report_section(
                         "trader_investment_plan", chunk["trader_investment_plan"]
                     )
+                    message_buffer.update_agent_status("Trader", "completed")
                     # Set first risk analyst to in_progress
                     message_buffer.update_agent_status("Risky Analyst", "in_progress")
 
@@ -1068,15 +1069,19 @@ def run_analysis():
                             "final_trade_decision",
                             f"### Portfolio Manager Decision\n{risk_state['judge_decision']}",
                         )
-                        # Mark risk analysts as completed
-                        message_buffer.update_agent_status("Risky Analyst", "completed")
-                        message_buffer.update_agent_status("Safe Analyst", "completed")
-                        message_buffer.update_agent_status(
-                            "Neutral Analyst", "completed"
-                        )
-                        message_buffer.update_agent_status(
-                            "Portfolio Manager", "completed"
-                        )
+                        
+                if 'confidence' in chunk and float(chunk['confidence']) >= 0.1:
+                    message_buffer.update_agent_status("Risky Analyst", "completed")
+                    message_buffer.update_agent_status("Safe Analyst", "completed")
+                    message_buffer.update_agent_status("Neutral Analyst", "completed")
+                    message_buffer.update_agent_status("Portfolio Manager", "completed")
+                    message_buffer.update_agent_status("Quality Manager","completed")
+                else:
+                    message_buffer.update_agent_status("Trader Analyst", "in_progress")
+                    message_buffer.update_agent_status("Risky Analyst", "in_progress")
+                    message_buffer.update_agent_status("Safe Analyst", "in_progress")
+                    message_buffer.update_agent_status("Neutral Analyst", "in_progress")
+                    message_buffer.update_agent_status("Portfolio Manager", "in_progress")
 
                 # Update the display
                 update_display(layout)

@@ -1,0 +1,1 @@
+I'll first extract the stock data for APPLE again to analyze and then execute the backtest properly.

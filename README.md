@@ -56,10 +56,23 @@ Here, we dive specifically into the Trader role. In this agent, it takes in repo
 
 The trader retrieves real time data from online sources such as Yahoo Finance, then analyzing the stock market data using our algorithms, and gives out a comprehensive report on the insights and reasonings that the agent gives. The agent itself is flexible as well, in here, we are able to incorporate whichever strategy we would like the agent to carry out, momentum is just one of the many strategies that we could incorporate into this framework. We aim to integrate our own algorithms into this framework for analyzing the chosen stock, allowing the agent to generate more sophisticated results and actionable insights for the final decision.
 
+SETUP
 
-Further goals:
-- Standarize the pipeline, ensuring the reports are uniform in structure and actively training the agents to do so
-- Incorporate different strategies and modularize the trader agent
-- Further engineer the analysts and manager agents to give key data points and actionable insights
-- Allowing the user to choose their own trading strategy via interface
-- Ability to interact with the market (purchasing/selling stocks)
+Set environmental variables for Finnhub and OpenAI API keys
+```bash
+export FINNHUB_API_KEY=$YOUR_FINNHUB_API_KEY
+```
+
+You will need the OpenAI API for all the agents.
+```bash
+export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
+```
+
+HOW TO RUN
+
+From the root of the directory:
+
+```bash
+venv/scripts/activate
+python -m cli.main
+```

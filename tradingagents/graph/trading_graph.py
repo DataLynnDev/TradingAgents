@@ -78,12 +78,14 @@ class TradingAgentsGraph:
         self.trader_memory = FinancialSituationMemory("trader_memory", self.config)
         self.invest_judge_memory = FinancialSituationMemory("invest_judge_memory", self.config)
         self.risk_manager_memory = FinancialSituationMemory("risk_manager_memory", self.config)
-
+        self.trading_strategy = self.config["trading_strategy"]
+        
         # Create tool nodes
         self.tool_nodes = self._create_tool_nodes()
-
+        
+        
         # Trading Strategy
-        self.trading_strategy = self.config["trading_strategy"]
+       
         # Initialize components
         self.conditional_logic = ConditionalLogic()
         self.graph_setup = GraphSetup(
@@ -154,9 +156,10 @@ class TradingAgentsGraph:
                     self.toolkit.get_simfin_cashflow,
                     self.toolkit.get_simfin_income_stmt,
                 ]
-            ),
+            )
         }
 
+    #ONLY TO RUN IN Main.py NOT RELEVANT TO WORKFLOW
     def propagate(self, company_name, trade_date):
         """Run the trading agents graph for a company on a specific date."""
 
