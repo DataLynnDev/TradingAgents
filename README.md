@@ -56,7 +56,7 @@ Here, we dive specifically into the Trader role. In this agent, it takes in repo
 
 The trader retrieves real time data from online sources such as Yahoo Finance, then analyzing the stock market data using our algorithms, and gives out a comprehensive report on the insights and reasonings that the agent gives. The agent itself is flexible as well, in here, we are able to incorporate whichever strategy we would like the agent to carry out, momentum is just one of the many strategies that we could incorporate into this framework. We aim to integrate our own algorithms into this framework for analyzing the chosen stock, allowing the agent to generate more sophisticated results and actionable insights for the final decision.
 
-PROGRAM STRUCTURE
+###PROGRAM STRUCTURE
 ```bash
 TradingAgents/
 ├── tradingagents/                
@@ -123,10 +123,10 @@ TradingAgents/
 ├── README.md                    
 └── LICENSE                      
 ```
-##FEATURES
+###FEATURES
 
 
-SETUP
+###SETUP
 Clone the repository and install requirements
 ```bash
 git clone https://github.com/DataLynnDev/TradingAgents
@@ -143,7 +143,7 @@ You will need the OpenAI API for all the agents.
 export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
 ```
 
-HOW TO RUN
+###RUNNING THE APPLICATION
 
 From the root of the directory:
 
