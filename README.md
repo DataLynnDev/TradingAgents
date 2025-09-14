@@ -56,8 +56,83 @@ Here, we dive specifically into the Trader role. In this agent, it takes in repo
 
 The trader retrieves real time data from online sources such as Yahoo Finance, then analyzing the stock market data using our algorithms, and gives out a comprehensive report on the insights and reasonings that the agent gives. The agent itself is flexible as well, in here, we are able to incorporate whichever strategy we would like the agent to carry out, momentum is just one of the many strategies that we could incorporate into this framework. We aim to integrate our own algorithms into this framework for analyzing the chosen stock, allowing the agent to generate more sophisticated results and actionable insights for the final decision.
 
-SETUP
+PROGRAM STRUCTURE
+```bash
+TradingAgents/
+├── tradingagents/                
+│   ├── agents/                   # Trading agent implementations
+│   │   ├── analysts/             # Market analysis agents
+│   │   │   ├── fundamentals_analyst.py
+│   │   │   ├── market_analyst.py
+│   │   │   ├── news_analyst.py
+│   │   │   └── social_analyst.py
+│   │   ├── managers/             # Management and coordination agents
+│   │   │   ├── document_embedding.py
+│   │   │   ├── quality_manager.py
+│   │   │   ├── research_manager.py
+│   │   │   └── risk_manager.py
+│   │   ├── researchers/          # Research and debate agents
+│   │   │   ├── bear_researcher.py
+│   │   │   └── bull_researcher.py
+│   │   ├── risk_mgmt/            # Risk management agents
+│   │   │   ├── aggresive_debator.py
+│   │   │   ├── conservative_debator.py
+│   │   │   └── neutral_debator.py
+│   │   ├── trader/               # Trading agent
+│   │   │   ├── strategies/       # Trading strategy implementations
+│   │   │   └── trader.py
+│   │   └── utils/                # Agent utilities and shared components
+│   │       ├── agent_states.py
+│   │       ├── agent_utils.py
+│   │       └── memory.py
+│   ├── dataflows/                # Data processing and interfaces
+│   │   ├── data_cache/           # Cached data storage
+│   │   ├── config.py
+│   │   ├── finnhub_utils.py
+│   │   └── interface.py
+│   ├── graph/                    # Workflow orchestration
+│   │   ├── conditional_logic.py  # Graph traversal conditions
+│   │   ├── propagation.py        # Wokrflow state initialization 
+│   │   ├── reflection.py         # Agent reflection 
+│   │   ├── setup.py              # Graph setup
+│   │   ├── signal_processing.py
+│   │   └── trading_graph.py      # Graph initialization
+│   ├── __init__.py
+│   └── default_config.py
+├── cli/                          # Command-line interface
+│   ├── static/                   # CLI static assets
+│   ├── __init__.py
+│   ├── main.py                   # CLI entry point
+│   └── models.py
+├── results/                      # Analysis results and reports
+│   └── APPLE/                    # Company-specific results
+│       └── 2025-*/               # Date-specific analysis
+│           ├── message_tool.log
+│           └── reports/          # Generated markdown reports
+├── assets/                       # Static assets and images
+│   ├── cli/                      # CLI-specific assets
+│   ├── analyst.png
+│   ├── researcher.png
+│   └── example.png
+├── archive/                      # Archived documentation
+├── main.py                       # Main application entry point
+├── pyproject.toml                # Project configuration
+├── requirements.txt              # Python dependencies
+├── uv.lock                       # Locked dependency versions
+├── setup.py                      # Package setup configuration
+├── README.md                    
+└── LICENSE                      
+```
+##FEATURES
 
+
+SETUP
+Clone the repository and install requirements
+```bash
+git clone https://github.com/DataLynnDev/TradingAgents
+cd TradingAgents
+pip install -r requirements.txt
+```
 Set environmental variables for Finnhub and OpenAI API keys
 ```bash
 export FINNHUB_API_KEY=$YOUR_FINNHUB_API_KEY
