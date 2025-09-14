@@ -68,7 +68,7 @@ class Trader:
         """
         curr_gain = 0;
         curr_log = "";
-        
+        #r = redis.Redis(host='localhost', port=6379, db=0)
         system_message = """You are a quantitative parameter optimization expert. Your goal is to improve trading strategy performance through systematic parameter adjustment.
 
         OPTIMIZATION FRAMEWORK:
@@ -96,6 +96,9 @@ class Trader:
         
         # Use current params for initial backtest
         params = self.params
+        
+        #r.set(self.strategy, json.dumps(params))
+
         for _ in range(2):
             backtest_logs = self.run_backtest_func(stock_data, params)
             
@@ -137,7 +140,9 @@ class Trader:
                 if backtest_logs[1] > curr_gain:
                     curr_gain = backtest_logs[1]
                     curr_log = backtest_logs[0]
-                    params.update(config_dict)
+                    #r.set(self.strategy, json.dumps(config_dict))
+                #params = json.loads(r.get(self.strategy))
+                    
                     
             except (json.JSONDecodeError, KeyError) as e:
                 print(f"Error: {e}")
